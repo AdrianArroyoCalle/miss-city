@@ -35,7 +35,7 @@ gulp.task("zip",["html","css","javascript","images"],function(cb){
   },{rootFolder: "/"});
 });
 
-gulp.task("check-size",function(cb){
+gulp.task("check-size",["zip"],function(cb){
   var stats=fs.statSync("miss-city.zip");
   var size=stats["size"];
   console.log("ZIP size is: "+filesize(size));
@@ -51,4 +51,4 @@ gulp.task("images",function(){
     .pipe(gulp.dest("build/"));
 });
 
-gulp.task("default",["zip","check-size"]);
+gulp.task("default",["check-size"]);
