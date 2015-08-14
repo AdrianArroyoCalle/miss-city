@@ -28,7 +28,7 @@ gulp.task("css",function(){
     .pipe(gulp.dest("build/"));
 });
 
-gulp.task("zip",function(cb){
+gulp.task("zip",["html","css","javascript","images"],function(cb){
   var zip=new EasyZip();
   zip.zipFolder("build/",function(){
     zip.writeToFile("miss-city.zip",cb);
@@ -51,4 +51,4 @@ gulp.task("images",function(){
     .pipe(gulp.dest("build/"));
 });
 
-gulp.task("default",["clean","javascript","html","css","images","zip","check-size"]);
+gulp.task("default",["zip","check-size"]);
