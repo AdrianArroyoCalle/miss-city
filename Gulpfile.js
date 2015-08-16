@@ -3,6 +3,7 @@ var uglify=require("gulp-uglify");
 var rimraf=require("rimraf");
 var imagemin=require("gulp-imagemin");
 var minifyCSS=require("gulp-minify-css");
+var minifyHTML=require("gulp-minify-html");
 var fs=require("fs");
 var EasyZip=require("easy-zip").EasyZip;
 var filesize=require("filesize");
@@ -19,6 +20,7 @@ gulp.task("javascript",function(){
 
 gulp.task("html",function(){
   return gulp.src("src/index.html")
+    .pipe(minifyHTML())
     .pipe(gulp.dest("build/"));
 });
 
