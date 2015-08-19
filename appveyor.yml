@@ -1,11 +1,9 @@
 version: 1.0-{build}
 os:
  - Windows Server 2012 R2
-enviroment:
- nodejs_version: "0.12"
 configuration: Release
 init:
-  - ps: Install-Product node $env:nodejs_version
+  - ps: Install-Product node 0.12 x64
   - ps: npm install -g gulp
 install:
   - ps: npm install
