@@ -15,6 +15,7 @@ var box, ctx;
 var guy, guyY;
 var rotation=0;
 var people=[];
+var easystar=new EasyStar.js();
 var dron=new Image;
 dron.src="dron.gif";
 var boy= new Image, girl=new Image;
@@ -114,6 +115,29 @@ function loop(){
 
   // Simulate people
 
+/* TODO - TODO - TODO */
+/*  people.forEach(function(person){
+    var available=person.filter(function(per){
+      return !per.show;
+    });
+    var index=getRandomInt(0,available.length);
+    available[index].show=true;
+    // CALCULAR INICIO ALEATORIAMENTE
+
+    // CALCULAR FINAL ALEATORIAMENTE
+  });*/
+  /*easystar.findPath(0,0,6,1,function(path){
+    //console.log(path);
+    // Path is an array of objects {x, y}
+  });*/
+  easystar.calculate();
+
+  people.forEach(function(person){
+    if(person.show){
+      ctx.drawImage(person.img,box*person.x,box*person.y,box*2/3,box*2/3);
+    }
+  });
+
   //ctx.drawImage(boy,box,box*17,box*2/3,box*2/3);
   //ctx.drawImage(girl,0,box*17,box*2/3,box*2/3);
 
@@ -164,6 +188,21 @@ function main(){
   window.onkeydown=function(evt){
     key(evt,1);
   }
+
+  var grid=[];
+  var q=-1;
+  for(var m=0;m<city.length;m++){
+    if(m % 25 == 0){
+      grid.push(new Array);
+      q++;
+    }
+    grid[q].push(city[m]);
+  }
+  console.log(grid);
+
+  easystar.setGrid(grid);
+  easystar.setAcceptableTiles([1]);
+
   // Generate 100 or more
   for(var k=0;k<100;k++){
     people.push({

@@ -12,7 +12,12 @@ gulp.task("clean",function(cb){
   rimraf("build",cb);
 });
 
-gulp.task("javascript",function(){
+gulp.task("lib",function(){
+  return gulp.src("src/easystar.min.js")
+    .pipe(gulp.dest("build/"));
+});
+
+gulp.task("js",function(){
   return gulp.src("src/index.js")
     .pipe(uglify())
     .pipe(gulp.dest("build/"));
@@ -30,7 +35,7 @@ gulp.task("css",function(){
     .pipe(gulp.dest("build/"));
 });
 
-gulp.task("zip",["html","css","javascript","images"],function(cb){
+gulp.task("zip",["lib","html","css","js","images"],function(cb){
   var zip=new EasyZip();
   zip.zipFolder("build/",function(){
     zip.writeToFile("miss-city.zip",cb);
