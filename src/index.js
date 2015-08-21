@@ -6,11 +6,15 @@ function write(str){
   scroll.value+="\n"+str;
   scroll.scrollTop=scroll.scrollHeight;
 }
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
 
 var keys=[0,0,0,0];
 var box, ctx;
 var guy, guyY;
 var rotation=0;
+var people=[];
 var dron=new Image;
 dron.src="dron.gif";
 var boy= new Image, girl=new Image;
@@ -108,10 +112,22 @@ function loop(){
   ctx.fill();*/
   ctx.drawImage(dron,guyX,guyY,box*2/3,box*2/3);
 
+  // Simulate people
+
+  //ctx.drawImage(boy,box,box*17,box*2/3,box*2/3);
+  //ctx.drawImage(girl,0,box*17,box*2/3,box*2/3);
+
+  // Update votes value
+  var votes=people.reduce(function(prev,current){
+    return prev+current.vote;
+  },0);
+  id("v").value=votes;
+
   requestAnimationFrame(loop);
 }
 
 function main(){
+  // Sound?
   id("m").value="";
   write("Welcome to MissCity - The reversed SsimCity - js13k");
   write("-----------------------------------------------");
@@ -148,6 +164,27 @@ function main(){
   window.onkeydown=function(evt){
     key(evt,1);
   }
+  // Generate 100 or more
+  for(var k=0;k<100;k++){
+    people.push({
+      img: boy,
+      vote: 0,
+      x: 0,
+      y: 0
+    });
+  }
+  people.forEach(function(p){
+    if(getRandomInt(1,100+1)>20){
+      p.vote=0;
+    }else{
+      p.vote=1;
+    }
+    if(getRandomInt(1,2+1)==1){
+      p.img=boy;
+    }else{
+      p.img=girl;
+    }
+  });
 
   requestAnimationFrame(loop);
 }
