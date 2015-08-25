@@ -15,12 +15,16 @@ var box, ctx;
 var guy, guyY;
 var rotation=0;
 var people=[];
+var DEBUG_GENERATE_PEOPLE=false;
 var easystar=new EasyStar.js();
 var dron=new Image;
 dron.src="dron.gif";
-var boy= new Image, girl=new Image;
+var boy= new Image, girl=new Image, shop=new Image, factory=new Image, house=new Image;
 boy.src="boy.gif";
 girl.src="girl.gif";
+shop.src="shop.gif";
+factory.src="factory.gif";
+house.src="house.gif";
 var city=[
   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, // 25
   2,2,2,2,2,3,1,2,2,2,2,2,2,2,2,3,3,4,4,4,4,1,4,4,4,
@@ -41,6 +45,24 @@ var city=[
   3,3,1,2,2,2,2,3,0,0,0,4,4,4,4,1,1,1,1,1,1,1,1,1,1,
   1,1,1,2,2,2,2,3,0,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4
 ];
+
+function calculateRandomRoad(){
+  var roads=city.filter(function(tile){
+	  return (tile=="1") ? true : false;
+  });
+  var initPoint=getRandomInt(0,roads.length);
+  var countRoad=0;
+  var countCity=0;
+  while(countRoad<initPoint){
+	  if(city[countCity]=="1")
+		countRoad++
+	  countCity++;
+  }
+  // TRANSFORMAR A PATHFINDING
+  var yPath=(countRoad / 25) >> 0;
+  var xPath=countRoad % 25;
+  return [xPath,yPath];
+}
 
 function key(evt,state){
   switch(evt.key){
@@ -66,24 +88,33 @@ function loop(){
   }
 
   // Render
+  ctx.fillStyle="rgb(91, 196, 124)";
+  ctx.fillRect(0,0,id("a").width,id("a").width*3/4);
   var draw=city.map(function(val){
     switch(val){
       case 0: return "rgba(91,196,124,1)";
       case 1: return "rgb(76, 77, 76)";
-      case 2: return "rgb(84, 230, 54)";
-      case 3: return "rgb(37, 88, 219)";
-      case 4: return "rgb(223, 155, 23)";
+      //case 2: return "rgb(84, 230, 54)";
+      case 2: return {img: house};
+      //case 3: return "rgb(37, 88, 219)";
+      case 3 : return {img: shop};
+      //case 4: return "rgb(223, 155, 23)";
+      case 4: return {img: factory};
     }
   });
   var x=0,y=0;
   draw.forEach(function(cell){
-    ctx.fillStyle=cell;
-    ctx.fillRect(x,y,box,box);
-    x+=box;
-    if((x+box)>id("a").width){
-      x=0;
-      y+=box;
-    }
+	if(typeof cell == "object"){
+		ctx.drawImage(cell.img,x,y,box,box);
+	}else{
+		ctx.fillStyle=cell;
+		ctx.fillRect(x,y,box,box);
+	}
+	x+=box;
+	if((x+box)>id("a").width){
+	  x=0;
+	  y+=box;
+	}
   });
   if(keys[0]){
     if(guyY-1 > 0){
@@ -116,16 +147,25 @@ function loop(){
   // Simulate people
 
 /* TODO - TODO - TODO */
-/*  people.forEach(function(person){
-    var available=person.filter(function(per){
-      return !per.show;
-    });
-    var index=getRandomInt(0,available.length);
-    available[index].show=true;
-    // CALCULAR INICIO ALEATORIAMENTE
-
-    // CALCULAR FINAL ALEATORIAMENTE
-  });*/
+  //if(getRandomInt(0,1000+1)>5){
+  if(DEBUG_GENERATE_PEOPLE){
+	DEBUG_GENERATE_PEOPLE=false;
+	var available=people.filter(function(per){
+		return !per.show;
+	});
+	var index=getRandomInt(0,available.length);
+	available[index].show=true;
+	// CALCULAR INICIO ALEATORIAMENTE
+	var initPath=calculateRandomRoad();
+	var endPath=calculateRandomRoad();
+	
+	// CALCULAR FINAL ALEATORIAMENTE
+	easystar.findPath(initPath[0],initPath[1],endPath[0],endPath[1],function(path){
+		available[index].path=path;
+		available[index].pos=0;
+	});
+  
+  }
   /*easystar.findPath(0,0,6,1,function(path){
     //console.log(path);
     // Path is an array of objects {x, y}
@@ -208,6 +248,8 @@ function main(){
     people.push({
       img: boy,
       vote: 0,
+      path: [],
+      pos: 0,
       x: 0,
       y: 0
     });
@@ -226,6 +268,21 @@ function main(){
   });
 
   requestAnimationFrame(loop);
+  
+  setInterval(function(){
+	people.forEach(function(person){
+		if(person.path!=null && person.path.length-1 > person.pos){
+			person.pos++;
+			person.x=person.path[person.pos].x;
+			person.y=person.path[person.pos].y;
+		}
+		if(person.path!=null && person.path.length-1 == person.pos){
+			person.show=false;
+		}
+	});
+  },1000);
 }
 
 window.onload=main;
+
+/* TODO - Investigar rutas con NULL y proponer solución */
