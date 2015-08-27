@@ -13,6 +13,7 @@ function getRandomInt(min, max) {
 var keys=[0,0,0,0];
 var box, ctx;
 var guy, guyY;
+var lastCalledTime;
 var rotation=0;
 var people=[];
 var DEBUG_GENERATE_PEOPLE=false;
@@ -48,7 +49,7 @@ var city=[
 
 function calculateRandomRoad(){
   var roads=city.filter(function(tile){
-	  return (tile=="1") ? true : false;
+	  return (tile === 1) ? true : false;
   });
   var initPoint=getRandomInt(0,roads.length);
   var countRoad=0;
@@ -59,8 +60,8 @@ function calculateRandomRoad(){
 	  countCity++;
   }
   // TRANSFORMAR A PATHFINDING
-  var yPath=(countRoad / 25) >> 0;
-  var xPath=countRoad % 25;
+  var yPath=(countCity / 25) >> 0;
+  var xPath=countCity % 25;
   return [xPath,yPath];
 }
 
@@ -74,6 +75,9 @@ function key(evt,state){
 }
 
 function loop(){
+  var speed=box; // 1 box per second
+  var delta=(new Date().getTime() - lastCalledTime)/1000;
+  lastCalledTime=Date.now();
   id("z1").onclick=function(){
 
   }
@@ -118,22 +122,22 @@ function loop(){
   });
   if(keys[0]){
     if(guyY-1 > 0){
-      guyY--;
+      guyY-=speed*delta;
     }
   }
   if(keys[1]){
     if(guyY+1 < id("a").height){
-      guyY++;
+      guyY+=speed*delta;
     }
   }
   if(keys[2]){
     if(guyX-1 > 0){
-      guyX--;
+      guyX-=speed*delta;
     }
   }
   if(keys[3]){
     if(guyX+1 < id("a").width){
-      guyX++;
+      guyX+=speed*delta;
     }
   }
 
@@ -147,29 +151,35 @@ function loop(){
   // Simulate people
 
 /* TODO - TODO - TODO */
-  //if(getRandomInt(0,1000+1)>5){
-  if(DEBUG_GENERATE_PEOPLE){
+  if(getRandomInt(0,100+1)<1){
+  //if(DEBUG_GENERATE_PEOPLE){
 	DEBUG_GENERATE_PEOPLE=false;
 	var available=people.filter(function(per){
 		return !per.show;
 	});
 	var index=getRandomInt(0,available.length);
-	available[index].show=true;
-	// CALCULAR INICIO ALEATORIAMENTE
-	var initPath=calculateRandomRoad();
-	var endPath=calculateRandomRoad();
-	
-	// CALCULAR FINAL ALEATORIAMENTE
-	easystar.findPath(initPath[0],initPath[1],endPath[0],endPath[1],function(path){
-		available[index].path=path;
-		available[index].pos=0;
-	});
+	if(index > 0){
+		available[index].show=true;
+		// CALCULAR INICIO ALEATORIAMENTE
+		var initPath=calculateRandomRoad();
+		var endPath=calculateRandomRoad();
+		
+		// CALCULAR FINAL ALEATORIAMENTE
+		easystar.findPath(initPath[0],initPath[1],endPath[0],endPath[1],function(path){
+			available[index].path=path;
+			available[index].pos=0;
+			if(path==null || path[0]==undefined){
+				//console.log("Ruta con NULL: ("+initPath[0]+","+initPath[1]+") TO ("+endPath[0]+","+endPath[1]+")");
+				available[index].path=[];
+				available[index].show=false;
+			}else{
+				available[index].x=path[0].x;
+				available[index].y=path[0].y;
+			}
+		});
+	}
   
   }
-  /*easystar.findPath(0,0,6,1,function(path){
-    //console.log(path);
-    // Path is an array of objects {x, y}
-  });*/
   easystar.calculate();
 
   people.forEach(function(person){
@@ -267,16 +277,17 @@ function main(){
     }
   });
 
+  lastCalledTime = Date.now();
   requestAnimationFrame(loop);
   
   setInterval(function(){
 	people.forEach(function(person){
-		if(person.path!=null && person.path.length-1 > person.pos){
+		if(person.path.length-1 > person.pos){
 			person.pos++;
 			person.x=person.path[person.pos].x;
 			person.y=person.path[person.pos].y;
 		}
-		if(person.path!=null && person.path.length-1 == person.pos){
+		if(person.path.length-1 == person.pos){
 			person.show=false;
 		}
 	});
