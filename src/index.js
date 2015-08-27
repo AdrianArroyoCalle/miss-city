@@ -12,10 +12,15 @@ function getRandomInt(min, max) {
 
 var keys=[0,0,0,0];
 var box, ctx;
-var guy, guyY;
+var guyX, guyY;
 var lastCalledTime;
 var rotation=0;
 var people=[];
+var actionRadio={
+	show: false,
+	color: "white",
+	radius: 0
+};
 var DEBUG_GENERATE_PEOPLE=false;
 var easystar=new EasyStar.js();
 var dron=new Image;
@@ -75,11 +80,20 @@ function key(evt,state){
 }
 
 function loop(){
-  var speed=box; // 1 box per second
+  var speed=box*2; // 2 box per second
   var delta=(new Date().getTime() - lastCalledTime)/1000;
   lastCalledTime=Date.now();
   id("z1").onclick=function(){
-
+	// SPREAD ADVERTISING
+	actionRadio={
+		show: true,
+		radius: box*3,
+		color: "white",
+		current: 0,
+		speed: 0.25,
+		x: guyX,
+		y: guyY
+	};
   }
   id("z2").onclick=function(){
 
@@ -187,6 +201,21 @@ function loop(){
       ctx.drawImage(person.img,box*person.x,box*person.y,box*2/3,box*2/3);
     }
   });
+  
+  // Draw Action Radio
+  if(actionRadio.show){
+	ctx.strokeStyle=actionRadio.color;
+	ctx.lineWidth=box*1/3;
+	ctx.beginPath();
+	ctx.arc(actionRadio.x,actionRadio.y,actionRadio.current,0,Math.PI*2,true);
+	ctx.closePath();
+	ctx.stroke();
+	actionRadio.current+=actionRadio.speed*box;
+	if(actionRadio.current > actionRadio.radius){
+		// Do ACTION
+		actionRadio.show=false;
+	}
+  }
 
   //ctx.drawImage(boy,box,box*17,box*2/3,box*2/3);
   //ctx.drawImage(girl,0,box*17,box*2/3,box*2/3);
