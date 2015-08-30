@@ -11,6 +11,8 @@ function getRandomInt(min, max) {
 }
 
 var keys=[0,0,0,0];
+var money=200000;
+var gameOver=false;
 var box, ctx;
 var guyX, guyY;
 var lastCalledTime;
@@ -86,23 +88,56 @@ function loop(){
   id("z1").onclick=function(){
 	// SPREAD ADVERTISING
 	actionRadio={
+		prop: 30,
 		show: true,
 		radius: box*3,
 		color: "white",
 		current: 0,
 		speed: 0.25,
 		x: guyX,
-		y: guyY
+		y: guyY,
+		price: 2000
 	};
   }
   id("z2").onclick=function(){
-
+	// FREE STICKERS
+	actionRadio={
+		prop: 20,
+		show: true,
+		radius: box*4,
+		color: "purple",
+		current: 0,
+		speed: 0.15,
+		x: guyX,
+		y: guyY,
+		price: 1500
+	};
   }
   id("z3").onclick=function(){
-
+	actionRadio={
+		prop: 60,
+		show: true,
+		radius: box*2,
+		color: "orange",
+		current: 0,
+		speed: 0.07,
+		x: guyX,
+		y: guyY,
+		price: 4000
+	};
   }
   id("z4").onclick=function(){
-
+	actionRadio={
+		prop: 5,
+		show: true,
+		radius: box*7,
+		color: "brown",
+		current: 0,
+		speed: 0.4,
+		x: guyX,
+		y: guyY,
+		price: 2500
+	};
   }
 
   // Render
@@ -163,9 +198,7 @@ function loop(){
   ctx.drawImage(dron,guyX,guyY,box*2/3,box*2/3);
 
   // Simulate people
-
-/* TODO - TODO - TODO */
-  if(getRandomInt(0,100+1)<1){
+  if(getRandomInt(0,100+1)<3){
   //if(DEBUG_GENERATE_PEOPLE){
 	DEBUG_GENERATE_PEOPLE=false;
 	var available=people.filter(function(per){
@@ -199,6 +232,10 @@ function loop(){
   people.forEach(function(person){
     if(person.show){
       ctx.drawImage(person.img,box*person.x,box*person.y,box*2/3,box*2/3);
+      if(person.voteChanged){
+		ctx.fillStyle="rgba(255,255,0,0.5)";
+		ctx.fillRect(box*person.x,box*person.y,box*2/3,box*2/3);  
+	  }
     }
   });
   
@@ -214,6 +251,32 @@ function loop(){
 	if(actionRadio.current > actionRadio.radius){
 		// Do ACTION
 		actionRadio.show=false;
+		money-=actionRadio.price;
+		if(money < 0){
+			write("You have wasted all the money!");
+			gameOver=true;
+		}
+		var filtered=people.map(function(pp){
+			if(pp.show && (actionRadio.x-actionRadio.radius) < pp.x*box && pp.x*box < (actionRadio.x+actionRadio.radius)){
+				if((actionRadio.y-actionRadio.radius) < pp.y*box && pp.y*box < (actionRadio.y+actionRadio.radius)){
+					return true;
+				}else{
+					return false;
+				}
+			}else{
+				return false;
+			}
+		});
+		filtered.forEach(function(pp,index){
+			if(pp === true){
+				if(getRandomInt(0,100+1) < actionRadio.prop){
+					if(people[index].vote !== 1){
+						people[index].vote=1;
+						people[index].voteChanged=true;
+					}
+				}
+			}
+		});
 	}
   }
 
@@ -224,9 +287,17 @@ function loop(){
   var votes=people.reduce(function(prev,current){
     return prev+current.vote;
   },0);
+  if(votes > 50){
+	// WIN
+	gameOver=true;
+	write("Yeah!! You have more than a half votes. You can be the next mayor of the city. You have scored: "+money+" points");  
+  }
+  
   id("v").value=votes;
+  id("c").value=money;
 
-  requestAnimationFrame(loop);
+  if(!gameOver)
+	requestAnimationFrame(loop);
 }
 
 function main(){
@@ -236,7 +307,7 @@ function main(){
   write("-----------------------------------------------");
   write("Look! It's Euralia. It's like the perfect city. Darío Paz is the perfect mayor... but not for us");
   write("Our company, Encisa, is trying to build a super mall in an old house. The mayor however has promised that if he wins the elections, he will do a library");
-  write("We must stop it! You have a week (15 minutes) to win the elections. Use our dron!!");
+  write("We must stop it! You have a week (2 minutes) to win the elections. Use our dron!!");
   id("a").height=id("a").width*3/4;
   box=id("a").width/25;
   guyX=box;
@@ -254,9 +325,11 @@ function main(){
 
   var time=setInterval(function(){
     id("t").value+=1;
-    if(id("t").value==15){
+    write("Day completed. Money - "+money+ " | Votes - "+id("v").value+ "%");
+    if(id("t").value==2){
       // END GAME
       write("Elections day! - Darío Paz continues as mayor. You have lost!! Maybe trying again...");
+      gameOver=true;
       clearInterval(time);
     }
   },1000*60);
@@ -266,6 +339,12 @@ function main(){
   }
   window.onkeydown=function(evt){
     key(evt,1);
+    switch(evt.key){
+		case "v": id("z1").click();break;
+		case "b": id("z2").click();break;
+		case "n": id("z3").click();break;
+		case "m": id("z4").click();break;
+	}
   }
 
   var grid=[];
@@ -290,7 +369,8 @@ function main(){
       path: [],
       pos: 0,
       x: 0,
-      y: 0
+      y: 0,
+      voteChanged: false
     });
   }
   people.forEach(function(p){
@@ -319,10 +399,14 @@ function main(){
 		if(person.path.length-1 == person.pos){
 			person.show=false;
 		}
+		if(person.voteChanged)
+			person.voteChanged=false;
 	});
   },1000);
 }
 
 window.onload=main;
 
-/* TODO - Investigar rutas con NULL y proponer solución */
+/* TODO - SFX */
+/* TODO - New Layout */
+/* TODO - Mobile */
