@@ -1,9 +1,10 @@
 #a{
-  margin-left: 0px;
-  width: 50%;
-  max-width: 50%;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
+}
+body{
+  overflow: hidden;
+  margin:0;
 }
 #b{
   float: left;
