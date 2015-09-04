@@ -360,8 +360,20 @@ function main(){
   // Sound?
   ctx=id("a").getContext("2d");
   //id("a").height=id("a").width*3/4;
-  id("a").height=window.innerHeight;
-  id("a").width=window.innerHeight/(3/4);
+  if(window.innerHeight/(3/4) % 25 === 0){
+	id("a").height=window.innerHeight;
+	id("a").width=window.innerHeight/(3/4);
+  }else{
+	var number=0;
+	do{
+		number++;
+	}while((number*25)<window.innerHeight);
+	while(((number-1)*25/(3/4)) % 25 !== 0){
+		number--;
+	}
+	id("a").height=(number-1)*25;
+	id("a").width=(number-1)*25/(3/4);
+  }
   box=id("a").width/25;
   guyX=box;
   guyY=box;
@@ -478,6 +490,19 @@ function main(){
 
 window.onload=main;
 
+function manageOrientation(){
+	var orientation = screen.orientation || screen.mozOrientation || screen.msOrientation;
+	console.log(orientation);
+	if(orientation.startsWith("landscape")){
+		// User changed orientation. Refresh
+		window.location.reload();
+	}
+}
+
+window.onorientationchange=manageOrientation;
+window.screen.onorientationchange=manageOrientation;
+window.screen.onmozorientationchange=manageOrientation;
+
 /* TODO - SFX */
-/* TODO - New Layout */
 /* TODO - Mobile */
+/* TODO - Touch controls y giroscopio */

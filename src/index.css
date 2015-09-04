@@ -6,17 +6,21 @@ body{
   overflow: hidden;
   margin:0;
 }
-#b{
-  float: left;
-  margin-left: 50%;
-  top: 0px;
-  position: fixed;
-  width: 50%;
+
+@media only screen and (orientation:portrait){
+  canvas {  
+    visibility: hidden;
+  }
+  p{
+   visibility: visible;
+  }
 }
-#m{
-  height: 200px;
-  width: 75%;
+@media only screen and (orientation:landscape){
+  p {
+     display: none;
+  }
+  canvas{
+	visibility: visible;
+  }
 }
-#x progress, #x meter{
-	margin-right: 10px;
-}
+
