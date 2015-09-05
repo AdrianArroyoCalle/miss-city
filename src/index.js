@@ -62,9 +62,21 @@ function write(str,cb){
   
   ctx.fillStyle="rgb(0,0,255)";
   ctx.fillRect(box*3,box*3,box*18,box*4);
+  ctx.font="16px Arial";
   ctx.fillStyle="black";
   // ctx.font
-  ctx.fillText(str,box*3,box*4);
+  var width=ctx.measureText(str).width;
+  var writeArray=[str];
+  while(width > box*15){
+	// SPLIT to a half
+	var half=str.length/2;
+	writeArray.push(str.substr(0,half));
+	writeArray.push(str.substr(half,str.length));
+	writeArray.shift();
+	width=ctx.measureText(writeArray[writeArray.length-1]);
+  }
+  for(var i=0;i<writeArray.length;i++)
+	ctx.fillText(writeArray[i],box*3,box*(4+i));
   
   // BLOCK GAME
   lock=true;
@@ -351,7 +363,7 @@ function loop(){
   ctx.fillStyle="black";
   ctx.fillText("Money",box*10,box*18);
   
-  if("ontouchstart" in window){
+  if("ontouchend" in window){
 	ctx.fillStyle="white";
 	ctx.fillRect(box*15,box*17,box*2,box*2);
 	ctx.fillStyle="purple";
@@ -553,7 +565,8 @@ window.ontouchstart=function(evt){
 	}
 }
 
-window.screen.lockOrientation("landscape");
+if(typeof window.screen.lockOrientation === "function")
+	window.screen.lockOrientation("landscape");
 
 /* TODO - SFX */
 /* TODO - Mobile */
