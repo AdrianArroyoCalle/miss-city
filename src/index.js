@@ -1,3 +1,5 @@
+"use strict";
+
 function id(i){
   return document.getElementById(i);
 }
@@ -349,7 +351,19 @@ function loop(){
   ctx.fillStyle="black";
   ctx.fillText("Money",box*10,box*18);
   
-  ctx.fillText("WASD - Move, VBNM - Different attacks",box*15,(box*18)+10);
+  if("ontouchstart" in window){
+	ctx.fillStyle="white";
+	ctx.fillRect(box*15,box*17,box*2,box*2);
+	ctx.fillStyle="purple";
+	ctx.fillRect(box*17,box*17,box*2,box*2);
+	ctx.fillStyle="orange";
+	ctx.fillRect(box*19,box*17,box*2,box*2);
+	ctx.fillStyle="brown";
+	ctx.fillRect(box*21,box*17,box*2,box*2);
+	
+  }else{
+	ctx.fillText("WASD - Move, VBNM - Different attacks",box*15,(box*18)+10);
+  }
 
   if(!gameOver)
 	requestAnimationFrame(loop);
@@ -502,6 +516,44 @@ function manageOrientation(){
 window.onorientationchange=manageOrientation;
 window.screen.onorientationchange=manageOrientation;
 window.screen.onmozorientationchange=manageOrientation;
+
+window.ondevicemotion=function(event){
+	keys[0]=false;
+	keys[1]=false;
+	keys[2]=false;
+	keys[3]=false;
+	if(event.accelerationIncludingGravity.x < -4){
+		keys[1]=true;
+	}
+	if(event.accelerationIncludingGravity.x > -2){
+		keys[0]=true;
+	}
+	if(event.accelerationIncludingGravity.y > 3){
+		keys[2]=true;
+	}
+	if(event.accelerationIncludingGravity.y < -3){
+		keys[3]=true;
+	}
+}
+
+window.onclick=function(){
+	if(lock)
+		lock=false;
+}
+
+window.ontouchstart=function(evt){
+	var x=evt.touches[0].clientX;
+	var y=evt.touches[0].clientY;
+	
+	if(y > box*17){
+		if(box*15 < x && x < box*17) z1();
+		if(box*17 < x && x < box*19) z2();
+		if(box*19 < x && x < box*21) z3();
+		if(box*21 < x && x < box*23) z4();
+	}
+}
+
+window.screen.lockOrientation("landscape");
 
 /* TODO - SFX */
 /* TODO - Mobile */
