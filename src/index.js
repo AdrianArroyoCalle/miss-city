@@ -107,11 +107,20 @@ function calculateRandomRoad(){
 }
 
 function key(evt,state){
-  switch(evt.key){
-    case "w" : keys[0]=state;break;
-    case "s" : keys[1]=state;break;
-    case "a" : keys[2]=state;break;
-    case "d" : keys[3]=state;break;
+  if(evt.key){
+	switch(evt.key){
+		case "w" : keys[0]=state;break;
+		case "s" : keys[1]=state;break;
+		case "a" : keys[2]=state;break;
+		case "d" : keys[3]=state;break;
+	}
+  }else{
+	switch(evt.keyCode){
+		case 87: keys[0]=state;break; 
+		case 83: keys[1]=state;break;
+		case 65: keys[2]=state;break;
+		case 68: keys[3]=state;break;
+	}  
   }
 }
 function z1(){
@@ -176,7 +185,7 @@ function loop(){
 	requestAnimationFrame(loop);
 	return;
   }
-  var speed=box*2; // 2 box per second
+  var speed=box*3; // 3 boxes per second
   var delta=(new Date().getTime() - lastCalledTime)/1000;
   lastCalledTime=Date.now();
 
@@ -294,7 +303,9 @@ function loop(){
 		actionRadio.show=false;
 		money-=actionRadio.price;
 		if(money < 0){
-			write("You have wasted all the money!");
+			write("You have wasted all the money!",function(){
+				window.location.reload();
+			});
 			gameOver=true;
 			clearInterval(time);
 		}
@@ -332,7 +343,9 @@ function loop(){
   if(votes > 50){
 	// WIN
 	gameOver=true;
-	write("Yeah!! You have more than a half votes. You can be the next mayor of the city. You have scored: "+money+" points");
+	write("Yeah!! You have more than a half votes. You can be the next mayor of the city. You have scored: "+money+" points",function(){
+		window.location.reload();
+	});
 	clearInterval(time);
   }
   
@@ -403,6 +416,10 @@ function main(){
   box=id("a").width/25;
   guyX=box;
   guyY=box;
+  keys[0]=0;
+  keys[1]=0;
+  keys[2]=0;
+  keys[3]=0;
   
   ctx.fillStyle="rgb(91, 196, 124)";
   ctx.fillRect(0,0,id("a").width,id("a").width*3/4);
@@ -435,7 +452,9 @@ function main(){
     console.log("Money - "+money+ " | Votes - "+v+ "%");
     if(t==120){
       // END GAME
-      write("Elections day! - Darío Paz continues as mayor. You have lost!! Maybe trying again...");
+      write("Elections day! - Darío Paz continues as mayor. You have lost!! Maybe trying again...",function(){
+		window.location.reload(); 
+	  });
       gameOver=true;
       clearInterval(time);
     }
@@ -448,11 +467,20 @@ function main(){
   }
   window.onkeydown=function(evt){
     key(evt,1);
-    switch(evt.key){
-		case "v": z1();break;
-		case "b": z2();break;
-		case "n": z3();break;
-		case "m": z4();break;
+    if(evt.key){
+		switch(evt.key){
+			case "v": z1();break;
+			case "b": z2();break;
+			case "n": z3();break;
+			case "m": z4();break;
+		}
+	}else{
+		switch(evt.keyCode){
+			case 86: z1();break;
+			case 66: z2();break;
+			case 78: z3();break;
+			case 77: z4();break;
+		}
 	}
   }
 
@@ -567,6 +595,9 @@ window.ontouchstart=function(evt){
 
 if(typeof window.screen.lockOrientation === "function")
 	window.screen.lockOrientation("landscape");
+	
+if(typeof window.screen.orientation.lock === "function")
+	window.screen.orientation.lock("landscape");
 
 /* TODO - SFX */
 /* TODO - Mobile */
