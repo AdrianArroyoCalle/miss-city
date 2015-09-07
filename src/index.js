@@ -599,6 +599,5 @@ if(typeof window.screen.lockOrientation === "function")
 if(typeof window.screen.orientation.lock === "function")
 	window.screen.orientation.lock("landscape");
 
-/* TODO - SFX */
-/* TODO - Mobile */
-/* TODO - Touch controls y giroscopio */
+/* SFX */
+/* Translate */
