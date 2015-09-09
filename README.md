@@ -27,7 +27,7 @@ You lose if:
  * You waste all the money (spread advertising cost money)
  * Time pass (you have 2 minutes)
  
-There are 4 different types of spreading advertising.
+There are 4 different types of spreading advertising. Use VBNM on desktop, touch controls on mobile.
 
 # Compatibility
 
