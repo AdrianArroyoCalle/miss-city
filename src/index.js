@@ -449,7 +449,7 @@ function main(){
 
   time=setInterval(function(){
     t+=1;
-    console.log("Money - "+money+ " | Votes - "+v+ "%");
+    //console.log("Money - "+money+ " | Votes - "+v+ "%");
     if(t==120){
       // END GAME
       write("Elections day! - Darío Paz continues as mayor. You have lost!! Maybe trying again...",function(){
@@ -493,7 +493,7 @@ function main(){
     }
     grid[q].push(city[m]);
   }
-  console.log(grid);
+  //console.log(grid);
 
   easystar.setGrid(grid);
   easystar.setAcceptableTiles([1]);
@@ -546,7 +546,7 @@ window.onload=main;
 
 function manageOrientation(){
 	var orientation = screen.orientation || screen.mozOrientation || screen.msOrientation;
-	console.log(orientation);
+	//console.log(orientation);
 	if(orientation.startsWith("landscape")){
 		// User changed orientation. Refresh
 		window.location.reload();
