@@ -1,11 +1,21 @@
+environment:
+ matrix:
+  - nodejs_version: "0.12"
+  - nodejs_version: "4.2"
+matrix:
+ allow_failures:
+  - nodejs_version: "0.12"
+platform:
+ - x86
+ - x64
 version: 1.0-{build}
 os:
  - Windows Server 2012 R2
 configuration: Release
 init:
-  - ps: Install-Product node 0.12 x64
-  - ps: npm install -g gulp
+  - ps: Install-Product node $env:nodejs_version $env:platform
+  - npm install -g gulp
 install:
-  - ps: npm install
+  - npm install
 build_script:
-  - ps: gulp
+  - gulp
